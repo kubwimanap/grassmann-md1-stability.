@@ -15,11 +15,14 @@ def grassmann_metric(Y1, Y2):
     """
     Computes the Grassmann distance (geodesic distance) between two subspaces.
     """
-    # Compute principal angles using SVD
-    U, s, Vt = svd(Y1.T @ Y2)
-    # The diagonal elements of s are the cosines of the principal angles
-    # Distance is the square root of the sum of squared principal angles
-    angles = np.arccos(np.clip(s, -1.0, 1.0))
+    # Principal angles theta_i: cos(theta_i) are the singular values of Y1^T Y2,
+    # sin(theta_i) those of (I - Y1 Y1^T) Y2. Combining both with arctan2 is
+    # accurate for small angles, where arccos alone loses about half the digits.
+    M = Y1.T @ Y2
+    U, cos_t, Vt = svd(M)
+    sin_t = svd((Y2 - Y1 @ M) @ Vt.T, compute_uv=False)
+    sin_t = np.sort(sin_t)[: len(cos_t)]  # pair the smallest sines with the largest cosines
+    angles = np.arctan2(sin_t, cos_t)
     return np.sqrt(np.sum(angles**2))
 
 def project_to_tangent(Y, G):
