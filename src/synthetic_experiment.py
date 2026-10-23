@@ -1,5 +1,7 @@
 import numpy as np
-from src.grassmann_utils import random_grassmann_point, grassmann_metric
+from grassmann_utils import random_grassmann_point, grassmann_metric
+
+np.random.seed(0)  # reproducible output
 
 # 1. Create two random points on the Grassmann manifold Gr(10, 3)
 # (10 dimensions, 3-dimensional subspace)
